@@ -19,24 +19,40 @@ webSocket.onopen = function (e) {
   console.log("Connected to server");
 };
 
+function hideElement(elementId) {
+  let el = document.getElementById(elementId).classList;
+  el.add("hidden");
+  el.remove("show");
+}
+
+function showElement(elementId) {
+  let el = document.getElementById(elementId).classList;
+  el.add("show");
+  el.remove("hidden");
+}
+
 // message sending and receiving
 webSocket.onmessage = function (e) {
-  console.log(e);
   const data = JSON.parse(e.data);
+  if (data.action === "MESSAGE") {
+    document.getElementById("lobby-messages").innerText = data.data.message;
+  }
   if (data.action === "CREATED") {
     console.log("Creating a new game");
     const gameID = data.data.gameId;
     if (gameID) {
+      hideElement("lobby-actions");
+      showElement("game");
       localStorage.setItem("gameId", gameID);
       console.log("game id saved");
-      // try {
-      //   webSocketGame = new WebSocket(
-      //     `ws://192.168.0.52:8080/game/${gameID}/user/${username}`
-      //   );
-      //   console.log(webSocketGame);
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      try {
+        webSocketGame = new WebSocket(
+          `ws://192.168.0.52:8080/game/${gameID}/user/${username}`
+        );
+        console.log(webSocketGame);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 };
