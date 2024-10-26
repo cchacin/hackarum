@@ -4,6 +4,8 @@ const createNewUser = () => {
   if (localStorage.getItem("username") === null) {
     username = prompt("Please enter your username", "User");
     localStorage.setItem("username", username);
+  } else {
+    username = localStorage.getItem("username");
   }
 };
 createNewUser();
@@ -19,23 +21,25 @@ webSocket.onopen = function (e) {
 
 // message sending and receiving
 webSocket.onmessage = function (e) {
-  console.log(e.data);
+  console.log(e);
   const data = JSON.parse(e.data);
-  const gameID = data.data.gameId;
-  if (gameID) {
-    localStorage.setItem("gameId", gameID);
-    console.log("game id saved");
-    try {
-      webSocketGame = new WebSocket(
-        `ws://192.168.0.52:8080/game/${gameID}/user/${username}`
-      );
-      //   console.log(webSocketGame)
-    } catch (error) {
-      console.log(error);
+  if (data.action === "CREATED") {
+    console.log("Creating a new game");
+    const gameID = data.data.gameId;
+    if (gameID) {
+      localStorage.setItem("gameId", gameID);
+      console.log("game id saved");
+      // try {
+      //   webSocketGame = new WebSocket(
+      //     `ws://192.168.0.52:8080/game/${gameID}/user/${username}`
+      //   );
+      //   console.log(webSocketGame);
+      // } catch (error) {
+      //   console.log(error);
+      // }
     }
   }
 };
-
 // error handling
 webSocket.onerror = function (error) {
   alert(`Tring to connect to ${error.currentTarget.url} type: ${error.type}`);
