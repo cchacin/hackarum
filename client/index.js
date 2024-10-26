@@ -1,18 +1,21 @@
-const webSocket = new WebSocket("ws://192.168.0.52:8080/lobby/ricardo");
 let webSocketGame;
 let username;
-// connetion to the server
-webSocket.onopen = function (e) {
-  console.log("Connected to server");
-};
 const createNewUser = () => {
   if (localStorage.getItem("username") === null) {
-      username = prompt("Please enter your username", "User");
+    username = prompt("Please enter your username", "User");
     localStorage.setItem("username", username);
   }
 };
 createNewUser();
 
+// create a new websocket
+const webSocket = new WebSocket(`ws://192.168.0.52:8080/lobby/${username}`);
+
+// connetion to the server
+
+webSocket.onopen = function (e) {
+  console.log("Connected to server");
+};
 
 // message sending and receiving
 webSocket.onmessage = function (e) {
@@ -23,8 +26,10 @@ webSocket.onmessage = function (e) {
     localStorage.setItem("gameId", gameID);
     console.log("game id saved");
     try {
-      webSocketGame = new WebSocket(`ws://192.168.0.52:8080/game/${gameID}/user/${username}`);
-    //   console.log(webSocketGame)
+      webSocketGame = new WebSocket(
+        `ws://192.168.0.52:8080/game/${gameID}/user/${username}`
+      );
+      //   console.log(webSocketGame)
     } catch (error) {
       console.log(error);
     }
